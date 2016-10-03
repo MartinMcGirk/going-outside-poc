@@ -4,7 +4,11 @@ FIXME: description
 
 ## Installation
 
-Download from http://example.com/FIXME.
+The only thing that needs to be done at the moment is to create a new file in the resources folder called "config.edn" that contains the following text only:
+
+{:darkskyApiKey "YOUR_KEY_GOES_HERE"}
+
+Where YOUR_KEY_GOES_HERE is obviously replaced by your own darksky weather API key.
 
 ## Usage
 
