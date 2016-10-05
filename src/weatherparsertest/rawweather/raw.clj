@@ -3,7 +3,7 @@
 
 (defn- build-url
   [apiKey lat lon]
-  (str "https://api.darksky.net/forecast/" apiKey  "/" lat "," lon))
+  (str "https://api.darksky.net/forecast/" apiKey  "/" lat "," lon "?units=si"))
 
 (defn- weatherdata
   [apiKey lat lon]
@@ -19,17 +19,18 @@
   "Applies a vector of operations to a vector of maps
 Each operation consists of a function to apply, and a key for the value that it is to be applied to and possibly a key to remap it to."
   [operations maps]
-  (map
-   #(let [f (:f %)
-          ok (:ok %)
-          nk (or (:nk %) (:ok %))]
-      (get-val-from-maps f ok nk maps))
-   operations))
+  (into {}
+        (map
+         #(let [f (:f %)
+                ok (:ok %)
+                nk (or (:nk %) (:ok %))]
+            (get-val-from-maps f ok nk maps))
+         operations)))
 
-(def ^:private ops [{:f min :ok :apparentTemperature}
-                    {:f max :ok :precipProbability :nk :rainProbability}
-                    {:f max :ok :precipIntensity :nk :rainIntensity}
-                    {:f max :ok :windSpeed}])
+(def ^:private ops [{:ok :apparentTemperature :f min}
+                    {:ok (comp #(* 100 %) :precipProbability) :f max :nk :rainProbability}
+                    {:ok :precipIntensity :f max :nk :rainIntensity}
+                    {:ok :windSpeed :f max}])
 
 (defn get-x-hours-weather
   "Gets a useful representation of the weather for the next 
